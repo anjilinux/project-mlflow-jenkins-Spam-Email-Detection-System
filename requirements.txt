@@ -1,0 +1,34 @@
+# Core
+python-dotenv
+numpy
+pandas
+scikit-learn
+
+# NLP
+nltk
+regex
+
+# ML Experiment Tracking
+mlflow
+
+# Model persistence
+joblib
+
+# API
+fastapi
+uvicorn
+
+# Testing
+pytest
+
+# Visualization (EDA)
+matplotlib
+seaborn
+
+# Monitoring & Logging
+prometheus-client
+loguru
+
+# Optional (GPU / Deep Learning – future ready)
+torch
+transformers

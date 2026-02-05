@@ -29,6 +29,7 @@ schema.py
 test_schema.py
 preprocessing.py
 test_preprocessing.py
+test_api.py
 )
 
 # Create files
