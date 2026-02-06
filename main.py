@@ -1,22 +1,21 @@
-# app/main.py
+# main.py
 from fastapi import FastAPI
 import joblib
 
-
 app = FastAPI()
+
 model = joblib.load("model.joblib")
+vectorizer = joblib.load("vectorizer.joblib")
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 
 @app.post("/predict")
-def predict(text: str):
-    pred = model.predict([text])
-    return {"spam": bool(pred[0])}
-from pydantic import BaseModel
-
-class Email(BaseModel):
-    text: str
-
-@app.post("/predict")
-def predict(email: Email):
-    pred = model.predict([email.text])
-    return {"spam": bool(pred[0])}
+def predict(data: dict):
+    text = [data["text"]]
+    X = vectorizer.transform(text)
+    pred = model.predict(X)[0]
+    return {"prediction": "spam" if pred == 1 else "ham"}
