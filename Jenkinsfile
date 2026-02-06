@@ -5,9 +5,9 @@ pipeline {
         VENV_NAME = "venv"
         APP_PORT = "8005"
 
-        // Safer for CI (no external dependency)
         MLFLOW_TRACKING_URI = "http://localhost:5555"
         MLFLOW_EXPERIMENT_NAME = "email-spam"
+        PYTHONPATH = "${WORKSPACE}"
     }
 
     options {
@@ -32,7 +32,6 @@ pipeline {
         stage("Setup Virtual Environment") {
             steps {
                 sh '''
-                
                 python3 -m venv $VENV_NAME
                 . $VENV_NAME/bin/activate
 
@@ -41,43 +40,82 @@ pipeline {
             }
         }
 
-stage("Verify Dataset") {
-    steps {
-        sh '''
-        if [ ! -f spam.csv ]; then
-            echo "❌ spam.csv missing"
-            exit 1
-        fi
-        '''
-    }
-}
+        /* ================================
+           Stage 3: Verify Dataset
+        ================================= */
+        stage("Verify Dataset") {
+            steps {
+                sh '''
+                if [ ! -f spam.csv ]; then
+                    echo "❌ spam.csv missing"
+                    exit 1
+                fi
+                echo "✅ spam.csv found"
+                '''
+            }
+        }
 
         /* ================================
-           Stage 3: Data Ingestion
+           Stage 4: Data Ingestion
         ================================= */
         stage("Data Ingestion") {
             steps {
                 sh '''
-                
                 . $VENV_NAME/bin/activate
                 python data_ingestion.py
                 '''
             }
         }
 
-stage('Lint') {
-  steps {
-    sh 'venv/bin/python -m py_compile data_ingestion.py'
-  }
-}
+        /* ================================
+           Stage 5: Lint (Syntax Check)
+        ================================= */
+        stage("Lint") {
+            steps {
+                sh '''
+                . $VENV_NAME/bin/activate
+                python -m py_compile \
+                    data_ingestion.py \
+                    preprocessing.py \
+                    data_preprocessing.py \
+                    feature_engineering.py \
+                    train.py \
+                    evaluate.py \
+                    main.py
+                '''
+            }
+        }
 
         /* ================================
-           Stage 4: Feature Engineering
+           Stage 6: Preprocessing (Text Clean)
+        ================================= */
+        stage("Preprocessing") {
+            steps {
+                sh '''
+                . $VENV_NAME/bin/activate
+                python preprocessing.py
+                '''
+            }
+        }
+
+        /* ================================
+           Stage 7: Data Preprocessing (Split)
+        ================================= */
+        stage("Data Preprocessing") {
+            steps {
+                sh '''
+                . $VENV_NAME/bin/activate
+                python data_preprocessing.py
+                '''
+            }
+        }
+
+        /* ================================
+           Stage 8: Feature Engineering
         ================================= */
         stage("Feature Engineering") {
             steps {
                 sh '''
-                
                 . $VENV_NAME/bin/activate
                 python feature_engineering.py
                 '''
@@ -85,41 +123,11 @@ stage('Lint') {
         }
 
         /* ================================
-           Stage 5: dat_preprocessing
-        ================================= */
-        stage("Data Preprocessing") {
-            steps {
-                sh '''
-
-                . $VENV_NAME/bin/activate
-                python Data_Preprocessing.py
-                '''
-            }
-        }
-
-
-       /* ================================
-           Stage 5: dpreprocessing
-        ================================= */
-        stage("Data Preprocessing") {
-            steps {
-                sh '''
-
-                . $VENV_NAME/bin/activate
-                python preprocessing.py
-                '''
-            }
-        }
-
-
-
-        /* ================================
-           Stage 6: Model Training (MLflow)
+           Stage 9: Model Training (MLflow)
         ================================= */
         stage("Model Training") {
             steps {
                 sh '''
-                
                 . $VENV_NAME/bin/activate
                 export MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
                 export MLFLOW_EXPERIMENT_NAME=$MLFLOW_EXPERIMENT_NAME
@@ -129,12 +137,11 @@ stage('Lint') {
         }
 
         /* ================================
-           Stage 7: Model Evaluation
+           Stage 10: Model Evaluation
         ================================= */
         stage("Model Evaluation") {
             steps {
                 sh '''
-                
                 . $VENV_NAME/bin/activate
                 python evaluate.py
                 '''
@@ -142,156 +149,102 @@ stage('Lint') {
         }
 
         /* ================================
-           Stage 8: Pytests (Unit + API)
+           Stage 11: Pytests
         ================================= */
-stage("Run Pytests") {
-    steps {
-        sh '''
-        . $VENV_NAME/bin/activate
-        export PYTHONPATH=$(pwd)
-
-        pytest test_data.py
-        pytest test_model.py
-        pytest test_api.py
-        pytest test_schema.py -W ignore::pydantic.PydanticDeprecatedSince20
-        '''
-    }
-}
+        stage("Run Pytests") {
+            steps {
+                sh '''
+                . $VENV_NAME/bin/activate
+                pytest test_data.py
+                pytest test_model.py
+                pytest test_api.py
+                pytest test_schema.py -W ignore::pydantic.PydanticDeprecatedSince20
+                '''
+            }
+        }
 
         /* ================================
-           Stage 9: Schema Validation
+           Stage 12: Schema Validation
         ================================= */
-stage("Schema Validation") {
-    steps {
-        sh '''
-        . $VENV_NAME/bin/activate
-        export PYTHONPATH=$(pwd)
-
-        python schema.py
-        '''
-    }
-}
+        stage("Schema Validation") {
+            steps {
+                sh '''
+                . $VENV_NAME/bin/activate
+                python schema.py
+                '''
+            }
+        }
 
         /* ================================
-           Stage 10: FastAPI Local Smoke Test
+           Stage 13: FastAPI Smoke Test
         ================================= */
-      
         stage("FastAPI Smoke Test") {
-        steps {
-            sh '''#!/bin/bash
-        set -e
+            steps {
+                sh '''#!/bin/bash
+                set -e
+                . venv/bin/activate
 
-        . venv/bin/activate
-        export PYTHONPATH=$WORKSPACE
+                nohup uvicorn main:app \
+                    --host 0.0.0.0 \
+                    --port 8005 > uvicorn.log 2>&1 &
 
-        echo "🚀 Starting FastAPI..."
+                sleep 5
 
-        nohup uvicorn main:app \
-        --host 0.0.0.0 \
-        --port 8005 \
-        > uvicorn.log 2>&1 &
+                curl -f http://localhost:8005/health
 
-        echo "⏳ Waiting for FastAPI..."
-        i=0
-        while [ $i -lt 20 ]; do
-        if curl -s http://localhost:8005/health | grep -q ok; then
-            echo "✅ FastAPI is up"
-            break
-        fi
-        sleep 1
-        i=$((i+1))
-        done
-
-        if ! curl -s http://localhost:8005/health | grep -q ok; then
-        echo "❌ FastAPI failed to start"
-        echo "📄 Uvicorn log:"
-        cat uvicorn.log
-        exit 1
-        fi
-
-        echo "📡 Testing /predict..."
-        curl -f http://localhost:8005/predict \
-        -H "Content-Type: application/json" \
-        -d '{"V1":0.1,"V2":0.1,"V3":0.1,"V4":0.1,"V5":0.1,
-            "V6":0.1,"V7":0.1,"V8":0.1,"V9":0.1,"V10":0.1,
-            "V11":0.1,"V12":0.1,"V13":0.1,"V14":0.1,"V15":0.1,
-            "V16":0.1,"V17":0.1,"V18":0.1,"V19":0.1,"V20":0.1,
-            "V21":0.1,"V22":0.1,"V23":0.1,"V24":0.1,"V25":0.1,
-            "V26":0.1,"V27":0.1,"V28":0.1,"Amount":0.5}'
-        '''
-        }
-        }
-
-        stage("Docker Build & Run") {
-        steps {
-            sh '''#!/bin/bash
-        set -e
-
-        # 🧹 Remove old container by ID
-        OLD_ID=$(docker ps -aq --filter "name=email-spam")
-        if [ -n "$OLD_ID" ]; then
-        docker rm -f $OLD_ID
-        fi
-
-        # 🏗 Build image
-        docker build -t email-spam .
-
-        # 🎯 Random port
-        HOST_PORT=$(shuf -i 8000-8999 -n 1)
-        echo $HOST_PORT > .docker_port
-
-        # 🚀 Run container
-        CONTAINER_ID=$(docker run -d \
-        -p $HOST_PORT:8005 \
-        --name email-spam \
-        email-spam)
-
-        echo $CONTAINER_ID > .docker_container_id
-
-        echo "🐳 Docker running"
-        echo "🆔 Container ID: $CONTAINER_ID"
-        echo "🌐 Port: $HOST_PORT"
-        '''
-        }
-        }
-
-        stage("FastAPI Docker Test") {
-        steps {
-            sh '''#!/bin/bash
-        set -e
-
-        HOST_PORT=$(cat .docker_port)
-        CONTAINER_ID=$(cat .docker_container_id)
-
-        echo "⏳ Waiting for Docker FastAPI on port $HOST_PORT..."
-
-        i=0
-        while [ $i -lt 30 ]; do
-        if curl -s http://localhost:$HOST_PORT/health | grep -q ok; then
-            echo "✅ Docker API is up"
-            break
-        fi
-        sleep 1
-        i=$((i+1))
-        done
-
-        curl -f -s http://localhost:$HOST_PORT/predict \
-        -H "Content-Type: application/json" \
-        -d '{"V1":0.1,"V2":0.1,"V3":0.1,"V4":0.1,"V5":0.1,
-            "V6":0.1,"V7":0.1,"V8":0.1,"V9":0.1,"V10":0.1,
-            "V11":0.1,"V12":0.1,"V13":0.1,"V14":0.1,"V15":0.1,
-            "V16":0.1,"V17":0.1,"V18":0.1,"V19":0.1,"V20":0.1,
-            "V21":0.1,"V22":0.1,"V23":0.1,"V24":0.1,"V25":0.1,
-            "V26":0.1,"V27":0.1,"V28":0.1,"Amount":0.5}'
-
-        # 🧹 Cleanup
-        docker rm -f $CONTAINER_ID
-        '''
-        }
+                curl -f http://localhost:8005/predict \
+                -H "Content-Type: application/json" \
+                -d '{"text": "Congratulations! You won a free prize"}'
+                '''
+            }
         }
 
         /* ================================
-           Stage 13: Archive Artifacts
+           Stage 14: Docker Build & Run
+        ================================= */
+        stage("Docker Build & Run") {
+            steps {
+                sh '''#!/bin/bash
+                set -e
+
+                docker rm -f email-spam || true
+                docker build -t email-spam .
+
+                HOST_PORT=$(shuf -i 8000-8999 -n 1)
+                echo $HOST_PORT > .docker_port
+
+                docker run -d \
+                    -p $HOST_PORT:8005 \
+                    --name email-spam \
+                    email-spam
+                '''
+            }
+        }
+
+        /* ================================
+           Stage 15: FastAPI Docker Test
+        ================================= */
+        stage("FastAPI Docker Test") {
+            steps {
+                sh '''#!/bin/bash
+                set -e
+
+                HOST_PORT=$(cat .docker_port)
+                sleep 5
+
+                curl -f http://localhost:$HOST_PORT/health
+
+                curl -f http://localhost:$HOST_PORT/predict \
+                -H "Content-Type: application/json" \
+                -d '{"text": "Free entry in a weekly competition"}'
+
+                docker rm -f email-spam
+                '''
+            }
+        }
+
+        /* ================================
+           Stage 16: Archive Artifacts
         ================================= */
         stage("Archive Artifacts") {
             steps {
@@ -306,11 +259,10 @@ stage("Schema Validation") {
 
     post {
         success {
-            echo "✅ Credit Card Fraud MLOps Pipeline Completed Successfully"
+            echo "✅ Spam Email Detection MLOps Pipeline SUCCESS"
         }
         failure {
-            echo "❌ Pipeline Failed – Check Jenkins Logs"
+            echo "❌ Pipeline FAILED – Check Jenkins Logs"
         }
-
     }
 }
