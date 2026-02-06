@@ -41,6 +41,17 @@ pipeline {
             }
         }
 
+stage("Verify Dataset") {
+    steps {
+        sh '''
+        if [ ! -f spam.csv ]; then
+            echo "❌ spam.csv missing"
+            exit 1
+        fi
+        '''
+    }
+}
+
         /* ================================
            Stage 3: Data Ingestion
         ================================= */
