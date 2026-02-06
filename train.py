@@ -1,3 +1,5 @@
+import os
+import shutil
 import mlflow
 import mlflow.sklearn
 import pandas as pd
@@ -14,9 +16,9 @@ def train_model():
     # Load dataset
     df = pd.read_csv("spam.csv")
 
-    # Encode labels
+    # Encode labels (ham=0, spam=1)
     le = LabelEncoder()
-    df["label"] = le.fit_transform(df["label"])  # ham=0, spam=1
+    df["label"] = le.fit_transform(df["label"])
 
     # Preprocess + split
     X_train_text, X_test_text, y_train, y_test = preprocess_and_split(df)
@@ -27,7 +29,6 @@ def train_model():
     # Model
     model = LogisticRegression(max_iter=1000)
 
-    # 🔥 THIS `with` BLOCK WAS MISSING INDENTATION IN YOUR FILE
     with mlflow.start_run():
         model.fit(X_train, y_train)
 
@@ -39,8 +40,12 @@ def train_model():
 
         print(f"✅ Training complete | Accuracy: {acc:.4f}")
 
-    # Save locally for Docker/FastAPI
-    mlflow.sklearn.save_model(model, "model.pkl")
+    # ✅ CI-safe local save (overwrite allowed)
+    local_model_path = "model.pkl"
+    if os.path.exists(local_model_path):
+        shutil.rmtree(local_model_path)
+
+    mlflow.sklearn.save_model(model, local_model_path)
 
 
 if __name__ == "__main__":
