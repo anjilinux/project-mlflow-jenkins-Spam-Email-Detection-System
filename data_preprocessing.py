@@ -1,22 +1,15 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from preprocessing import clean_text
 
-
-def split_and_preprocess(
-    df: pd.DataFrame,
-    test_size: float = 0.2,
-    random_state: int = 42,
-):
+def preprocess_and_split(df, test_size=0.2, random_state=42):
     """
-    Cleans text and splits data into train/test sets
+    Split spam dataset into train/test sets
     """
 
-    df = df.copy()
-
-    # Expected schema: label, text
-    df["text"] = df["text"].apply(clean_text)
+    # Basic validation
+    if "text" not in df.columns or "label" not in df.columns:
+        raise ValueError("Dataset must contain 'text' and 'label' columns")
 
     X = df["text"]
     y = df["label"]
@@ -26,7 +19,11 @@ def split_and_preprocess(
         y,
         test_size=test_size,
         random_state=random_state,
-        stratify=y,
+        stratify=y
     )
 
     return X_train, X_test, y_train, y_test
+
+
+if __name__ == "__main__":
+    print("✅ Data preprocessing module loaded")
