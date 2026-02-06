@@ -1,5 +1,6 @@
 import os
 import shutil
+import joblib
 import mlflow
 import mlflow.sklearn
 import pandas as pd
@@ -40,12 +41,14 @@ def train_model():
 
         print(f"✅ Training complete | Accuracy: {acc:.4f}")
 
-    # ✅ CI-safe local save (overwrite allowed)
-    local_model_path = "model.pkl"
-    if os.path.exists(local_model_path):
-        shutil.rmtree(local_model_path)
+    # 🔹 Save MLflow-style local model (directory)
+    mlflow_model_path = "model.pkl"
+    if os.path.exists(mlflow_model_path):
+        shutil.rmtree(mlflow_model_path)
+    mlflow.sklearn.save_model(model, mlflow_model_path)
 
-    mlflow.sklearn.save_model(model, local_model_path)
+    # 🔹 Save joblib model for pytest + FastAPI
+    joblib.dump(model, "model.joblib")
 
 
 if __name__ == "__main__":
