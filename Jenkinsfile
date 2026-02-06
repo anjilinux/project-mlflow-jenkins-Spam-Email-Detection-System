@@ -54,6 +54,12 @@ pipeline {
             }
         }
 
+stage('Lint') {
+  steps {
+    sh 'venv/bin/python -m py_compile data_ingestion.py'
+  }
+}
+
         /* ================================
            Stage 4: Feature Engineering
         ================================= */
