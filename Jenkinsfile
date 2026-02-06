@@ -85,7 +85,21 @@ stage('Lint') {
         }
 
         /* ================================
-           Stage 5: Data Preprocessing
+           Stage 5: dat_preprocessing
+        ================================= */
+        stage("Data Preprocessing") {
+            steps {
+                sh '''
+
+                . $VENV_NAME/bin/activate
+                python Data_Preprocessing.py
+                '''
+            }
+        }
+
+
+       /* ================================
+           Stage 5: dpreprocessing
         ================================= */
         stage("Data Preprocessing") {
             steps {
@@ -96,6 +110,8 @@ stage('Lint') {
                 '''
             }
         }
+
+
 
         /* ================================
            Stage 6: Model Training (MLflow)
