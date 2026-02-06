@@ -9,8 +9,8 @@ model = joblib.load("model.joblib")
 
 @app.post("/predict")
 def predict(text: str):
-pred = model.predict([text])
-return {"spam": bool(pred[0])}
+    pred = model.predict([text])
+    return {"spam": bool(pred[0])}
 from pydantic import BaseModel
 
 class Email(BaseModel):
