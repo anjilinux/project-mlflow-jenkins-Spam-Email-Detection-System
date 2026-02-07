@@ -224,16 +224,42 @@ pipeline {
         /* ================================
            Stage 15: FastAPI Docker Test
         ================================= */
-stage('FastAPI Docker Test') {
+
+
+
+stage('FastAPI Docker Test (GPU)') {
     steps {
         sh '''
+        echo "================ HOST GPU (before container) ================"
+        nvidia-smi || echo "❌ NVIDIA-SMI not available on host"
+
+        echo "================ CLEAN OLD CONTAINER ========================="
         docker rm -f spam-api || true
-        docker run -d -p 8777:8000 --name spam-api email-spam
+
+        echo "================ START GPU CONTAINER ========================="
+        docker run -d \
+          --gpus all \
+          -p 8777:8000 \
+          --name spam-api \
+          email-spam
+
         sleep 20
+
+        echo "================ CONTAINER GPU ==============================="
+        docker exec spam-api nvidia-smi || echo "❌ NVIDIA-SMI not available inside container"
+
+        echo "================ FASTAPI HEALTH CHECK ========================"
         curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8777/health
+
+        echo "================ FASTAPI PREDICT CHECK ======================="
+        curl -X POST http://localhost:8777/predict \
+             -H "Content-Type: application/json" \
+             -d '{"text":"Win a free iPhone now"}'
         '''
     }
 }
+
+
 
 
         /* ================================

@@ -32,3 +32,11 @@ loguru
 # Optional (GPU / Deep Learning – future ready)
 torch
 transformers
+
+fastapi
+uvicorn
+scikit-learn
+joblib
+pandas
+numpy
+mlflow
