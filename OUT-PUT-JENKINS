@@ -1,0 +1,642 @@
+Started by user anjireddy-jenkins
+
+Obtained Jenkinsfile from git https://github.com/anjilinux/project-mlflow-jenkins-Spam-Email-Detection-System.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/lib/jenkins/workspace/spam-email
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/spam-email/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/anjilinux/project-mlflow-jenkins-Spam-Email-Detection-System.git # timeout=10
+Fetching upstream changes from https://github.com/anjilinux/project-mlflow-jenkins-Spam-Email-Detection-System.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/anjilinux/project-mlflow-jenkins-Spam-Email-Detection-System.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 3b2801193d9decc4200065d583e4dba8d53a15ed (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 3b2801193d9decc4200065d583e4dba8d53a15ed # timeout=10
+Commit message: "data"
+ > git rev-list --no-walk 3b2801193d9decc4200065d583e4dba8d53a15ed # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 1 hr 0 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout Code)
+[Pipeline] git
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/spam-email/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/anjilinux/project-mlflow-jenkins-Spam-Email-Detection-System.git # timeout=10
+Fetching upstream changes from https://github.com/anjilinux/project-mlflow-jenkins-Spam-Email-Detection-System.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/anjilinux/project-mlflow-jenkins-Spam-Email-Detection-System.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 3b2801193d9decc4200065d583e4dba8d53a15ed (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 3b2801193d9decc4200065d583e4dba8d53a15ed # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master 3b2801193d9decc4200065d583e4dba8d53a15ed # timeout=10
+Commit message: "data"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Setup Virtual Environment)
+[Pipeline] sh
++ python3 -m venv venv
+
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ pip install -r requirements.txt
+
+Requirement already satisfied: python-dotenv in ./venv/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (1.2.1)
+pyasn1<0.7.0,>=0.6.1 in ./venv/lib/python3.12/site-packages (from pyasn1-modules>=0.2.1->google-auth~=2.0->databricks-sdk<1,>=0.20.0->mlflow-skinny==3.9.0->mlflow->-r requirements.txt (line 12)) (0.6.2)
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify Dataset)
+[Pipeline] sh
++ [ ! -f spam.csv ]
++ echo ✅ spam.csv found
+✅ spam.csv found
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Data Ingestion)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ python data_ingestion.py
+
+⬇️ Preparing dataset (fresh)...
+✅ Fresh spam.csv created
+📊 Dataset shape: (5572, 2)
+  label                                               text
+0   ham  Go until jurong point, crazy.. Available only ...
+1   ham                      Ok lar... Joking wif u oni...
+2  spam  Free entry in 2 a wkly comp to win FA Cup fina...
+3   ham  U dun say so early hor... U c already then say...
+4   ham  Nah I don't think he goes to usf, he lives aro...
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ python -m py_compile data_ingestion.py preprocessing.py data_preprocessing.py feature_engineering.py train.py evaluate.py main.py
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Preprocessing)
+[Pipeline] sh
+
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ python preprocessing.py
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Data Preprocessing)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ python data_preprocessing.py
+
+✅ Data preprocessing module loaded
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Feature Engineering)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ python feature_engineering.py
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Model Training)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ export MLFLOW_TRACKING_URI=http://localhost:5555
++ export MLFLOW_EXPERIMENT_NAME=email-spam
++ python train.py
+
+2026/02/07 11:59:06 WARNING mlflow.models.model: `artifact_path` is deprecated. Please use `name` instead.
+/var/lib/jenkins/workspace/spam-email/venv/lib/python3.12/site-packages/mlflow/models/model.py:1209: FutureWarning: Saving scikit-learn models in the pickle or cloudpickle format requires exercising caution because these formats rely on Python's object serialization mechanism, which can execute arbitrary code during deserialization.The recommended safe alternative is the 'skops' format.
+  flavor.save_model(path=local_path, mlflow_model=mlflow_model, **kwargs)
+
+✅ Training complete | Accuracy: 0.9704
+🏃 View run beautiful-doe-712 at: http://localhost:5555/#/experiments/74/runs/f72758646dc445d681b547270dcf9ea8
+🧪 View experiment at: http://localhost:5555/#/experiments/74
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Model Evaluation)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ python evaluate.py
+
+✅ Evaluation module loaded
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Pytests)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ pytest test_data.py
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /var/lib/jenkins/workspace/spam-email
+plugins: anyio-4.12.1
+collected 1 item
+
+test_data.py .                                                           [100%]
+
+============================== 1 passed in 0.37s ===============================
++ pytest test_model.py
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /var/lib/jenkins/workspace/spam-email
+plugins: anyio-4.12.1
+collected 2 items
+
+
+..                                                         [100%]
+
+============================== 2 passed in 1.19s ===============================
++ pytest test_api.py
+
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /var/lib/jenkins/workspace/spam-email
+plugins: anyio-4.12.1
+collected 2 items
+
+test_api.py ..                                                           [100%]
+
+============================== 2 passed in 1.51s ===============================
++ pytest test_schema.py -W ignore::pydantic.PydanticDeprecatedSince20
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /var/lib/jenkins/workspace/spam-email
+plugins: anyio-4.12.1
+collected 2 items
+
+
+
+
+============================== 2 passed in 0.07s ===============================
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Schema Validation)
+[Pipeline] sh
++ . venv/bin/activate
++ deactivate nondestructive
++ [ -n  ]
++ [ -n  ]
++ hash -r
++ [ -n  ]
++ unset VIRTUAL_ENV
++ unset VIRTUAL_ENV_PROMPT
++ [ ! nondestructive = nondestructive ]
++ [  = cygwin ]
++ [  = msys ]
++ export VIRTUAL_ENV=/var/lib/jenkins/workspace/spam-email/venv
++ _OLD_VIRTUAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ PATH=/var/lib/jenkins/workspace/spam-email/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
++ export PATH
++ [ -n  ]
++ [ -z  ]
++ _OLD_VIRTUAL_PS1=$ 
++ PS1=(venv) $ 
++ export PS1
++ VIRTUAL_ENV_PROMPT=(venv) 
++ export VIRTUAL_ENV_PROMPT
++ hash -r
++ python schema.py
+✅ Dataset schema validation passed
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (FastAPI Smoke Test)
+[Pipeline] sh
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+
+
+100    15  100    15    0     0   2604      0 --:--:-- --:--:-- --:--:--  3000
+{"status":"ok"}  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100    70  100    21  100    49   5694  13286 --:--:-- --:--:-- --:--:-- 23333
+{"prediction":"spam"}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Docker Build & Run)
+[Pipeline] sh
+email-spam
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 441B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+#2 DONE 1.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/nvidia/cuda:12.1.0-runtime-ubuntu22.04@sha256:402700b179eb764da6d60d99fe106aa16c36874f7d7fb3e122251ff6aea8b2f7
+#4 DONE 0.0s
+
+#5 [internal] load build context
+
+#5 transferring context: 6.14MB 1.3s done
+
+#5 DONE 1.9s
+
+#6 [2/6] WORKDIR /app
+#6 CACHED
+
+#7 [3/6] RUN apt update && apt install -y python3 python3-pip
+#7 CACHED
+
+#8 [4/6] COPY requirements.txt .
+#8 CACHED
+
+#9 [5/6] RUN pip install --no-cache-dir -r requirements.txt
+#9 CACHED
+
+#10 [6/6] COPY . .
+
+#10 DONE 28.1s
+
+#11 exporting to image
+#11 exporting layers
+
+#11 exporting layers 33.7s done
+
+#11 writing image sha256:7b986dfa6b94f5834792a8c592ba1c20a8a1e1198e67a90df21f56fce9b3be66 done
+#11 naming to docker.io/library/email-spam done
+#11 DONE 33.8s
+9deef6c67fd94388be7fca2cda442f6a1935d9327b9c0b271532c07c163a3f17
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (FastAPI Docker Test (GPU))
+[Pipeline] sh
++ echo ================ HOST GPU =================
+================ HOST GPU =================
++ nvidia-smi
+
+Sat Feb  7 12:00:30 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+| N/A   57C    P0              6W /   50W |       6MiB /   4096MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            2385      G   /usr/lib/xorg/Xorg                        4MiB |
++-----------------------------------------------------------------------------------------+
++ echo ================ CLEAN ====================
+================ CLEAN ====================
++ docker rm -f spam-api
+
+spam-api
++ echo ================ RUN ======================
+================ RUN ======================
++ docker run -d --gpus all -p 8777:8000 --name spam-api email-spam
+d52fee1278d51b3a79663bb089494d11ae0e7fccaf19328d0ad2541cd7360ee8
++ sleep 5
+
++ echo ================ CONTAINER STATUS =========
+================ CONTAINER STATUS =========
++ docker ps -a
++ grep spam-api
+d52fee1278d5   email-spam   "/opt/nvidia/nvidia_…"   6 seconds ago   Up 5 seconds   0.0.0.0:8777->8000/tcp, [::]:8777->8000/tcp             spam-api
++ echo ================ CONTAINER LOGS ===========
+================ CONTAINER LOGS ===========
++ docker logs spam-api
+
+==========
+== CUDA ==
+==========
+
+CUDA Version 12.1.0
+
+Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+By pulling and using the container, you accept the terms and conditions of this license:
+https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+
+A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+
+*************************
+** DEPRECATION NOTICE! **
+*************************
+THIS IMAGE IS DEPRECATED and is scheduled for DELETION.
+    https://gitlab.com/nvidia/container-images/cuda/blob/master/doc/support-policy.md
+
+/usr/local/lib/python3.10/dist-packages/sklearn/base.py:442: InconsistentVersionWarning: Trying to unpickle estimator LogisticRegression from version 1.8.0 when using version 1.7.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+/usr/local/lib/python3.10/dist-packages/sklearn/base.py:442: InconsistentVersionWarning: Trying to unpickle estimator TfidfTransformer from version 1.8.0 when using version 1.7.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+/usr/local/lib/python3.10/dist-packages/sklearn/base.py:442: InconsistentVersionWarning: Trying to unpickle estimator TfidfVectorizer from version 1.8.0 when using version 1.7.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
++ echo ================ GPU INSIDE ===============
+================ GPU INSIDE ===============
++ docker exec spam-api nvidia-smi
+Sat Feb  7 06:30:36 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 590.48.01              Driver Version: 590.48.01      CUDA Version: 13.1     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce GTX 1650 Ti     On  |   00000000:01:00.0 Off |                  N/A |
+| N/A   59C    P0             15W /   50W |       6MiB /   4096MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
++ echo ================ HEALTH ===================
+================ HEALTH ===================
++ curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8777/health
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100    15  100    15    0     0   1902      0 --:--:-- --:--:-- --:--:--  2142
+{"status":"ok"}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive Artifacts)
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+✅ Spam Email Detection MLOps Pipeline SUCCESS
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
