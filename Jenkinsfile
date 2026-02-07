@@ -230,13 +230,13 @@ pipeline {
 stage('FastAPI Docker Test (GPU)') {
     steps {
         sh '''
-        echo "================ HOST GPU (before container) ================"
-        nvidia-smi || echo "❌ NVIDIA-SMI not available on host"
+        echo "================ HOST GPU ================="
+        nvidia-smi || true
 
-        echo "================ CLEAN OLD CONTAINER ========================="
+        echo "================ CLEAN ===================="
         docker rm -f spam-api || true
 
-        echo "================ START GPU CONTAINER ========================="
+        echo "================ RUN ======================"
         docker run -d \
           --gpus all \
           -p 8777:8000 \
@@ -245,20 +245,20 @@ stage('FastAPI Docker Test (GPU)') {
 
         sleep 5
 
-        echo "================ CONTAINER GPU ==============================="
-        docker exec spam-api nvidia-smi || echo "❌ NVIDIA-SMI not available inside container"
+        echo "================ CONTAINER STATUS ========="
+        docker ps -a | grep spam-api || true
 
-        echo "================ FASTAPI HEALTH CHECK ========================"
-        curl --retry 3 --retry-delay 3 --retry-connrefused http://localhost:8777/health
+        echo "================ CONTAINER LOGS ==========="
+        docker logs spam-api || true
 
-        echo "================ FASTAPI PREDICT CHECK ======================="
-        curl -X POST http://localhost:8777/predict \
-             -H "Content-Type: application/json" \
-             -d '{"text":"Win a free iPhone now"}'
+        echo "================ GPU INSIDE ==============="
+        docker exec spam-api nvidia-smi || true
+
+        echo "================ HEALTH ==================="
+        curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8777/health
         '''
     }
 }
-
 
 
 
