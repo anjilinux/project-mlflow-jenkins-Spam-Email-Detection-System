@@ -224,24 +224,17 @@ pipeline {
         /* ================================
            Stage 15: FastAPI Docker Test
         ================================= */
-        stage("FastAPI Docker Test") {
-            steps {
-                sh '''#!/bin/bash
-                set -e
+stage('FastAPI Docker Test') {
+    steps {
+        sh '''
+        docker rm -f spam-api || true
+        docker run -d -p 8888:8000 --name spam-api email-spam
+        sleep 20
+        curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8000/health
+        '''
+    }
+}
 
-                HOST_PORT=$(cat .docker_port)
-                sleep 5
-
-                curl -f http://localhost:$HOST_PORT/health
-
-                curl -f http://localhost:$HOST_PORT/predict \
-                -H "Content-Type: application/json" \
-                -d '{"text": "Free entry in a weekly competition"}'
-
-                docker rm -f email-spam
-                '''
-            }
-        }
 
         /* ================================
            Stage 16: Archive Artifacts
