@@ -243,13 +243,13 @@ stage('FastAPI Docker Test (GPU)') {
           --name spam-api \
           email-spam
 
-        sleep 20
+        sleep 5
 
         echo "================ CONTAINER GPU ==============================="
         docker exec spam-api nvidia-smi || echo "❌ NVIDIA-SMI not available inside container"
 
         echo "================ FASTAPI HEALTH CHECK ========================"
-        curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8777/health
+        curl --retry 3 --retry-delay 3 --retry-connrefused http://localhost:8777/health
 
         echo "================ FASTAPI PREDICT CHECK ======================="
         curl -X POST http://localhost:8777/predict \
