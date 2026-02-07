@@ -228,9 +228,9 @@ stage('FastAPI Docker Test') {
     steps {
         sh '''
         docker rm -f spam-api || true
-        docker run -d -p 8888:8000 --name spam-api email-spam
+        docker run -d -p 8777:8000 --name spam-api email-spam
         sleep 20
-        curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8888/health
+        curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:8777/health
         '''
     }
 }
